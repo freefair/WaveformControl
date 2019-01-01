@@ -9,7 +9,6 @@ import android.graphics.Path;
 import android.graphics.Picture;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
@@ -17,6 +16,9 @@ import android.view.View;
 import com.newventuresoftware.waveform.utils.*;
 
 import java.util.LinkedList;
+import java.util.Locale;
+
+import androidx.core.content.ContextCompat;
 
 /**
  * TODO: document your custom view class.
@@ -43,6 +45,7 @@ public class WaveformView extends View {
     private Bitmap mCachedWaveformBitmap;
     private int colorDelta = 255 / (HISTORY_SIZE + 1);
     private boolean showTextAxis = true;
+    private boolean showTimecode = true;
 
     public WaveformView(Context context) {
         super(context);
@@ -75,6 +78,7 @@ public class WaveformView extends View {
                 ContextCompat.getColor(context, R.color.default_playback_indicator));
         int mTextColor = a.getColor(R.styleable.WaveformView_timecodeColor,
                 ContextCompat.getColor(context, R.color.default_timecode));
+        showTextAxis = a.getBoolean(R.styleable.WaveformView_showTextAxis, true);
 
         a.recycle();
 
@@ -318,7 +322,7 @@ public class WaveformView extends View {
         int secondStep = (int)(textWidth * seconds * 2) / width;
         secondStep = Math.max(secondStep, 1);
         for (float i = 0; i <= seconds; i += secondStep) {
-            canvas.drawText(String.format("%.2f", i), i * xStep, textHeight, mTextPaint);
+            canvas.drawText(String.format(Locale.getDefault(), "%.2f", i), i * xStep, textHeight, mTextPaint);
         }
     }
 }

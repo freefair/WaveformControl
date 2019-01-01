@@ -16,17 +16,12 @@ package com.newventuresoftware.waveformdemo;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.newventuresoftware.waveform.WaveformView;
 
 import org.apache.commons.io.IOUtils;
@@ -37,10 +32,14 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 public class MainActivity extends AppCompatActivity {
 
-    private WaveformView mRealtimeWaveformView;
-    private RecordingThread mRecordingThread;
     private PlaybackThread mPlaybackThread;
     private static final int REQUEST_RECORD_AUDIO = 13;
 
@@ -51,27 +50,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mRealtimeWaveformView = (WaveformView) findViewById(R.id.waveformView);
-        mRecordingThread = new RecordingThread(new AudioDataReceivedListener() {
-            @Override
-            public void onAudioDataReceived(short[] data) {
-                mRealtimeWaveformView.setSamples(data);
-            }
-        });
-
-        final WaveformView mPlaybackView = (WaveformView) findViewById(R.id.playbackWaveformView);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mRecordingThread.recording()) {
-                    startAudioRecordingSafe();
-                } else {
-                    mRecordingThread.stopRecording();
-                }
-            }
-        });
+        final WaveformView mPlaybackView = findViewById(R.id.playbackWaveformView);
 
         short[] samples = null;
         try {
@@ -81,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (samples != null) {
-            final FloatingActionButton playFab = (FloatingActionButton) findViewById(R.id.playFab);
+            final FloatingActionButton playFab = findViewById(R.id.playFab);
 
             mPlaybackThread = new PlaybackThread(samples, new PlaybackListener() {
                 @Override
@@ -117,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        mRecordingThread.stopRecording();
         mPlaybackThread.stopPlayback();
     }
 
@@ -158,40 +136,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void startAudioRecordingSafe() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED) {
-            mRecordingThread.startRecording();
-        } else {
-            requestMicrophonePermission();
-        }
-    }
-
-    private void requestMicrophonePermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.RECORD_AUDIO)) {
-            // Show dialog explaining why we need record audio
-            Snackbar.make(mRealtimeWaveformView, "Microphone access is required in order to record audio",
-                    Snackbar.LENGTH_INDEFINITE).setAction("OK", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{
-                            android.Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO);
-                }
-            }).show();
-        } else {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{
-                    android.Manifest.permission.RECORD_AUDIO}, REQUEST_RECORD_AUDIO);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_RECORD_AUDIO && grantResults.length > 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            mRecordingThread.stopRecording();
-        }
     }
 }
