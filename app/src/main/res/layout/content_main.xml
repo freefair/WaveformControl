@@ -16,7 +16,7 @@
     <com.newventuresoftware.waveform.WaveformView
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        app:mode="PLAYBACK"
+        app:mode="playback"
         app:waveformStrokeThickness="3"
         app:waveformColor="?attr/colorAccent"
         app:waveformFillColor="?attr/colorPrimary"

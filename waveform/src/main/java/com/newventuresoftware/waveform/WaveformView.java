@@ -26,7 +26,6 @@ import androidx.core.content.ContextCompat;
 public class WaveformView extends View {
     public static final int MODE_RECORDING = 1;
     public static final int MODE_PLAYBACK = 2;
-
     private static final int HISTORY_SIZE = 6;
 
     private TextPaint mTextPaint;
@@ -153,7 +152,7 @@ public class WaveformView extends View {
     }
 
     public void setMode(int mMode) {
-        mMode = mMode;
+        this.mMode = mMode;
     }
 
     public short[] getSamples() {

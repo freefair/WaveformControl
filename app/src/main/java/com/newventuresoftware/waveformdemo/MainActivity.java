@@ -100,14 +100,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private short[] getAudioSample() throws IOException{
-        InputStream is = getResources().openRawResource(R.raw.jinglebells);
         byte[] data;
-        try {
+        try (InputStream is = getResources().openRawResource(R.raw.jinglebells)) {
             data = IOUtils.toByteArray(is);
-        } finally {
-            if (is != null) {
-                is.close();
-            }
         }
 
         ShortBuffer sb = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
